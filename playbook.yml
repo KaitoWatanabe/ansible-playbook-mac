@@ -1,0 +1,91 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  sudo: no
+  vars:
+    ruby_version: 2.2.1
+    homebrew_packages_taps:
+      - caskroom/versions
+
+    homebrew_packages_packages:
+      - { name: rbenv }
+      - { name: ruby-build }
+      - { name: z }
+      - { name: node }
+      - { name: sqlite3 }
+      - { name: hub }
+
+    homebrew_cask_packages_packages:
+      - iterm2
+      - java
+      - dropbox
+      - virtualbox
+      - vagrant
+      - flux
+      - google-chrome
+      - alfred
+      - sublime-text3
+      - firefox
+      - 1password
+      - brackets
+      - atom
+      - karabiner
+      - handbrake
+      - seil
+      - transmit
+      - vlc
+      - bettertouchtool
+      - google-japanese-ime
+      - slack
+      - mou
+
+    atom_packages_packages:
+      - project-manager
+      - emmet
+      - language-slim
+
+  pre_tasks:
+    - name: 'oh-my-zsh: get status'
+      register: oh_my_zsh
+      stat: path=~/.oh-my-zsh/
+    - name: 'oh-my-zsh: install'
+      shell: curl -L http://install.ohmyz.sh | sh
+      when: oh_my_zsh.stat.exists == false
+
+  roles:
+    - hnakamur.homebrew-packages
+    - hnakamur.homebrew-cask-packages
+    - hnakamur.atom-packages
+
+  tasks:
+    - name: check written hub alias
+      shell: git create
+      register: written_hub_alias
+      ignore_errors: yes
+    - name: write hub alias
+      shell: echo 'function git(){hub "$@"}' >> ~/.zshrc
+      when: written_hub_alias|failed
+    - name: reload .zshrc
+      shell: source ~/.zshrc
+      when: written_hub_alias|failed
+    - name: check whether a specific version of ruby is installed or not
+      shell: rbenv versions | grep {{ ruby_version }}
+      register: ruby_installed
+      ignore_errors: yes
+    - name: install ruby with rbenv
+      command: rbenv install {{ ruby_version }}
+      when: ruby_installed|failed
+    - name: set ruby version global
+      command: rbenv global {{ruby_version}}
+      when: ruby_installed|failed
+    - name: write rbenv path
+      shell: echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+      when: ruby_installed|failed
+    - name: reload .zshrc
+      shell: source ~/.zshrc
+      when: ruby_installed|failed
+    - name: install bundler gem
+      command: gem install bundler --no-ri --no-rdoc
+    - name: rbenv rehash
+      command: rbenv rehash
