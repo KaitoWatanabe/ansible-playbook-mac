@@ -15,6 +15,11 @@
       - { name: node }
       - { name: sqlite3 }
       - { name: hub }
+      - { name: heroku-toolbelt }
+      - { name: pngquant }
+      - { name: watchman }
+      - { name: flow }
+
 
     homebrew_cask_packages_packages:
       - iterm2
@@ -27,7 +32,6 @@
       - alfred
       - sublime-text3
       - firefox
-      - 1password
       - brackets
       - atom
       - karabiner
@@ -39,11 +43,19 @@
       - google-japanese-ime
       - slack
       - mou
+      - flashlight
+      - duet
+      - tomighty
+      - skype
+      - goofy
 
     atom_packages_packages:
       - project-manager
       - emmet
       - language-slim
+      - show-ideographic-space
+      - autocomplete-plus
+      - autocomplete-paths
 
   pre_tasks:
     - name: 'oh-my-zsh: get status'
@@ -60,11 +72,11 @@
 
   tasks:
     - name: check written hub alias
-      shell: git create
+      command: git create
       register: written_hub_alias
       ignore_errors: yes
     - name: write hub alias
-      shell: echo 'function git(){hub "$@"}' >> ~/.zshrc
+      command: echo 'function git(){hub "$@"}' >> ~/.zshrc
       when: written_hub_alias|failed
     - name: reload .zshrc
       shell: source ~/.zshrc
