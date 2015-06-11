@@ -12,13 +12,14 @@
       - { name: rbenv }
       - { name: ruby-build }
       - { name: z }
-      - { name: node }
+      - { name: nodebrew }
       - { name: sqlite3 }
       - { name: hub }
       - { name: heroku-toolbelt }
       - { name: pngquant }
-      - { name: watchman }
-      - { name: flow }
+      - { name: imagemagick }
+      - { name: mysql }
+      - { name: peco }
 
 
     homebrew_cask_packages_packages:
@@ -43,7 +44,6 @@
       - google-japanese-ime
       - slack
       - mou
-      - flashlight
       - duet
       - tomighty
       - skype
@@ -71,16 +71,6 @@
     - hnakamur.atom-packages
 
   tasks:
-    - name: check written hub alias
-      command: git create
-      register: written_hub_alias
-      ignore_errors: yes
-    - name: write hub alias
-      command: echo 'function git(){hub "$@"}' >> ~/.zshrc
-      when: written_hub_alias|failed
-    - name: reload .zshrc
-      shell: source ~/.zshrc
-      when: written_hub_alias|failed
     - name: check whether a specific version of ruby is installed or not
       shell: rbenv versions | grep {{ ruby_version }}
       register: ruby_installed
