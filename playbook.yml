@@ -85,7 +85,7 @@
       shell: echo 'eval "$(rbenv init -)"' >> ~/.zshrc
       when: ruby_installed|failed
     - name: reload .zshrc
-      shell: source ~/.zshrc
+      shell: /bin/bash -lc "source ~/.zshrc"
       when: ruby_installed|failed
     - name: install bundler gem
       command: gem install bundler --no-ri --no-rdoc
